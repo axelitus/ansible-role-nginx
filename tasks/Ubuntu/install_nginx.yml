@@ -4,7 +4,6 @@
     repo: "ppa:nginx/stable"
     state: "present"
   register: nginx_add_ppa
-  when: ansible_distribution == 'Ubuntu'
 
 - name: Install Nginx
   apt:
