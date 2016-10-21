@@ -1,0 +1,21 @@
+--- # Ansible Role [Nginx]: vars.debian (Axel Pardemann <axelitus@GitHub>)
+nginx:
+  publish_path: "/vagrant/src/public"
+  log_path: "/var/log/nginx"
+ssl:
+  folder:
+    path: "/etc/ssl/development"
+    owner: "root"
+    group: "root"
+sslcert:
+  key: "{{ ssl.folder.path }}/nginx_ssl.key"
+  csr:
+    path: "{{ ssl.folder.path }}/nginx_ssl.csr"
+    data:
+      country: "MX"
+      state: "Distrito Federal"
+      city: "CDMX"
+      org: "axelitusMX"
+      ou: "Development"
+      cn: "development"
+  crt: "{{ ssl.folder.path }}/nginx_ssl.crt"

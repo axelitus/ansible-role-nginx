@@ -1,0 +1,31 @@
+--- # Ansible Role [Nginx]: tasks.ubuntu.create_ssl_cert (Axel Pardemann <axelitus@GitHub>)
+- name: Check if OpenSSL exists
+  command: dpkg-query -l openssl
+  register: openssl_exists
+  failed_when: openssl_exists.rc > 1
+  changed_when: no
+
+- name: Create SSL folders
+  file:
+    path: "{{ ssl.folder.path }}"
+    owner: "{{ ssl.folder.owner }}"
+    group: "{{ ssl.folder.group }}"
+    state: directory
+    mode: 0755
+  when: openssl_exists|succeeded
+  register: ssl_create_folder
+
+- name: Create SSL Key
+  shell: openssl genrsa -out "{{ sslcert.key }}" 2048
+  when: ssl_create_folder|succeeded
+  register: ssl_create_key
+
+- name: Create SSL Certificate Request
+  shell: openssl req -new -key "{{ sslcert.key }}" -out "{{ sslcert.csr.path }}" -subj "/C={{ sslcert.csr.data.country }}/ST={{ sslcert.csr.data.state }}/L={{ sslcert.csr.data.city }}/O={{ sslcert.csr.data.org }}/OU={{ sslcert.csr.data.ou }}/CN={{ sslcert.csr.data.cn }}"
+  when: ssl_create_key|succeeded
+  register: ssl_create_csr
+
+- name: Create SSL Certificate
+  shell: openssl x509 -req -days 365 -in "{{ sslcert.csr.path }}" -signkey "{{ sslcert.key }}" -out "{{ sslcert.crt }}"
+  when: ssl_create_csr|succeeded
+  register: ssl_create_crt

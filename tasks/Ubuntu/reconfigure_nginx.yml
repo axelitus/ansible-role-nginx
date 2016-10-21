@@ -1,0 +1,44 @@
+--- # Ansible Role [Nginx]: tasks.ubuntu.reconfigure_nginx (Axel Pardemann <axelitus@GitHub>)
+- name: Disable Nginx default site
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+  when: nginx_install|succeeded
+  register: nginx_disable_default
+  notify:
+    - Reload Nginx service
+
+- name: Create Nginx publish folder
+  file:
+    path: "/vagrant/src/public"
+    state: directory
+    mode: 0755
+  when: nginx_disable_default
+  register: nginx_create_publish_path
+
+- name: Copy Nginx Development configuration
+  template:
+    src: "dev.j2"
+    dest: "/etc/nginx/sites-available/dev"
+    owner: "root"
+    group: "root"
+  when: nginx_create_publish_path|succeeded
+  register: nginx_copy_dev_config
+
+- name: Enable Nginx Development virtual host
+  file:
+    src: "/etc/nginx/sites-available/dev"
+    dest: "/etc/nginx/sites-enabled/dev"
+    state: link
+  when: nginx_create_publish_path|success
+  notify:
+    - Reload Nginx service
+
+- name: Create hosts file entry
+  lineinfile:
+    dest: "/etc/hosts"
+    regexp: '^127\.0\.0\.1'
+    line: '127.0.0.1 dev.local'
+    owner: root
+    group: root
+    mode: 0644

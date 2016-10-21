@@ -1,0 +1,22 @@
+--- # Ansible Role [Nginx]: tasks.ubuntu.install_nginx (Axel Pardemann <axelitus@GitHub>)
+- name: Add Nginx PPA Repository
+  apt_repository:
+    repo: "ppa:nginx/stable"
+    state: "present"
+  register: nginx_add_ppa
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: latest
+    update_cache: yes
+  when: nginx_add_ppa|succeeded
+  register: nginx_install
+  notify:
+    - Start Nginx service
+
+- name: Set Nginx autostart
+  shell: systemctl enable nginx
+  when: nginx_install|succeeded
+  register: nginx_set_autostart

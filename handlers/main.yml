@@ -1,0 +1,9 @@
+--- # Ansible Role [Nginx]: handlers.main (Axel Pardemann <axelitus@GitHub>)
+- name: Start Nginx service
+  service: name=nginx state=started
+
+- name: Reload Nginx service
+  service: name=nginx state=reloaded
+
+- name: Restart Nginx service
+  service: name=nginx state=restarted
