@@ -37,8 +37,6 @@
 - name: Create hosts file entry
   lineinfile:
     dest: "/etc/hosts"
-    regexp: '^127\.0\.0\.1'
-    line: '127.0.0.1 dev.local'
-    owner: root
-    group: root
-    mode: 0644
+    regexp: '^127\.0\.0\.1.+dev\.local'
+    line: "127.0.0.1\tdev.local"
+  when: nginx_create_publish_path
