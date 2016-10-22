@@ -7,25 +7,25 @@
 
 - name: Create SSL folders
   file:
-    path: "{{ ssl.folder.path }}"
-    owner: "{{ ssl.folder.owner }}"
-    group: "{{ ssl.folder.group }}"
-    state: directory
+    path: "{{ axelitus_nginx_ssl_path }}"
+    owner: "root"
+    group: "root"
     mode: 0755
+    state: directory
   when: openssl_exists|succeeded
   register: ssl_create_folder
 
 - name: Create SSL Key
-  shell: openssl genrsa -out "{{ sslcert.key }}" 2048
+  shell: openssl genrsa -out "{{ axelitus_nginx_ssl_cert_key }}" 2048
   when: ssl_create_folder|succeeded
   register: ssl_create_key
 
 - name: Create SSL Certificate Request
-  shell: openssl req -new -key "{{ sslcert.key }}" -out "{{ sslcert.csr.path }}" -subj "/C={{ sslcert.csr.data.country }}/ST={{ sslcert.csr.data.state }}/L={{ sslcert.csr.data.city }}/O={{ sslcert.csr.data.org }}/OU={{ sslcert.csr.data.ou }}/CN={{ sslcert.csr.data.cn }}"
+  shell: openssl req -new -key "{{ axelitus_nginx_ssl_cert_key }}" -out "{{ axelitus_nginx_ssl_cert_csr }}" -subj "/C={{ axelitus_nginx_ssl_cert_csr_country }}/ST={{ axelitus_nginx_ssl_cert_csr_state }}/L={{ axelitus_nginx_ssl_cert_csr_city }}/O={{ axelitus_nginx_ssl_cert_csr_org }}/OU={{ axelitus_nginx_ssl_cert_csr_ou }}/CN={{ axelitus_nginx_ssl_cert_csr_cn }}"
   when: ssl_create_key|succeeded
   register: ssl_create_csr
 
 - name: Create SSL Certificate
-  shell: openssl x509 -req -days 365 -in "{{ sslcert.csr.path }}" -signkey "{{ sslcert.key }}" -out "{{ sslcert.crt }}"
+  shell: openssl x509 -req -days 365 -in "{{ axelitus_nginx_ssl_cert_csr }}" -signkey "{{ axelitus_nginx_ssl_cert_key }}" -out "{{ axelitus_nginx_ssl_cert_crt }}"
   when: ssl_create_csr|succeeded
   register: ssl_create_crt

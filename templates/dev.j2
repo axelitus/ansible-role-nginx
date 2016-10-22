@@ -2,13 +2,13 @@ server {
 	listen 80;
 	listen 443 ssl;
 	server_name dev.local;
-	root {{ nginx.publish_path }};
+	root {{ axelitus_nginx_publish_path }};
 
-	access_log {{ nginx.log_path }}/dev-access.log;
-	error_log {{ nginx.log_path }}/dev-error.log error;
+	access_log {{ axelitus_nginx_log_path }}/dev-access.log;
+	error_log {{ axelitus_nginx_log_path }}/dev-error.log error;
 
-	ssl_certificate 	{{ sslcert.crt }};
-	ssl_certificate_key {{ sslcert.key }};
+	ssl_certificate 	{{ axelitus_nginx_ssl_cert_crt }};
+	ssl_certificate_key {{ axelitus_nginx_ssl_cert_key }};
 
 	index index.php index.html index.htm;
 	charset utf-8;
