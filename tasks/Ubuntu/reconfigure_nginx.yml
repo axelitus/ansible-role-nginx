@@ -24,6 +24,8 @@
     group: "root"
   when: nginx_create_publish_path|succeeded
   register: nginx_copy_config
+  notify:
+    - Reload Nginx service
 
 - name: Copy Nginx Development configuration
   template:
@@ -33,6 +35,8 @@
     group: "root"
   when: nginx_copy_config|succeeded
   register: nginx_copy_dev_config
+  notify:
+    - Reload Nginx service
 
 - name: Enable Nginx Development virtual host
   file:
